@@ -1,0 +1,9 @@
+[package]
+name = "rust_webview_browser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tao = "0.30.0"
+wry = "0.46.0"
+url = "2.5.0"

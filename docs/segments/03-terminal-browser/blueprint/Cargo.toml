@@ -1,0 +1,11 @@
+[package]
+name = "rust_terminal_browser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.28.1"
+ratatui = "0.29.0"
+reqwest = { version = "0.12.9", default-features = false, features = ["rustls-tls"] }
+tokio = { version = "1.40.0", features = ["full"] }
+html2text = "0.13.6"
