@@ -1,50 +1,63 @@
 # Rust Browser Learning
 
-Learning notes on making websites easy for an LLM to inspect and operate, and where Rust could help build a browser shell or controller.
+Learning notes about two questions. How can an LLM easily read and operate a website? Where can Rust help to build a browser shell or a browser controller?
+
+An LLM (large language model) is an AI system that reads and writes text, for example Claude. A browser shell is the window, menus and controls around a web engine.
 
 | Field | Value |
 |---|---|
 | Project name | `000-111-rust-browser` |
 | Manifest section | 3 - Tier 111 - Learning |
-| Status | Discussion and learning notes; no browser implementation |
+| Status | Discussion and learning notes. No browser implementation. |
 | Discussion date | 2026-10-05, Asia/Singapore |
 | Suggested GitHub description | Explores Rust browser shells and semantic browser automation so LLMs can inspect pages, operate controls and verify results. |
 
-## Discussion record
+## Research segments
 
-Read [the saved conversation](docs/2026-10-05-discussion.md) for the user's questions and the assistant's response. The discussion originated in `000-222-rust-feh`, but this learning project has a separate scope.
+We divided the content into six segments. Each segment asks one feasibility question. Feasibility is a measure of whether a task is possible with the time, tools and skill that we have.
+
+| Segment | Research question |
+|---|---|
+| [01 LLM web operation](docs/segments/01-llm-web-operation/README.md) | Can an LLM operate a website through an existing browser? |
+| [02 Webview shell](docs/segments/02-webview-shell/README.md) | Can we build a Rust browser shell on an existing web engine? |
+| [03 Terminal browser](docs/segments/03-terminal-browser/README.md) | Can an LLM write a terminal browser in Rust in one afternoon? |
+| [04 Toy engine](docs/segments/04-toy-engine/README.md) | Can an LLM write a small rendering engine from the start? |
+| [05 Servo shell](docs/segments/05-servo-shell/README.md) | Can we build a browser shell on the Servo engine? |
+| [06 LLM Rust generation](docs/segments/06-llm-rust-generation/README.md) | Which methods help an LLM write Rust code that compiles? |
+
+Start with segment 01. It tests the main goal directly. Segments 02 to 06 come from a separate research report.
+
+## Repository layout
+
+| Folder | Content |
+|---|---|
+| `docs/segments/` | One folder for each segment. Segments 02 and 03 also hold a code blueprint from the report. |
+| `docs/review/` | The [document review](docs/review/2026-10-05-document-review.md). It records the problems in the source documents. |
+| `docs/sources/` | The original documents, without change. |
+
+The source documents are:
+
+- [The saved discussion](docs/sources/2026-10-05-discussion.md). It holds the questions of the user and the response of the assistant. The discussion started in `000-222-rust-feh`, but this learning project has a separate scope.
+- [The feasibility report (Markdown)](docs/sources/2026-10-05-rust-browser-llm-feasibility-report.md). It examines whether an LLM can write a Rust web browser in one afternoon.
+- [The feasibility report (HTML)](docs/sources/2026-10-05-rust-browser-llm-feasibility-report.html). It is an interactive page of the same report. Open it in a web browser with internet access.
 
 ## Working recommendation
 
-Start with an existing browser and Playwright automation. An LLM needs readable page semantics and reliable actions: inspect, click, type, wait and verify. Rust can later provide a custom browser shell or controller if the experiment demonstrates a useful reason for one.
+Start with an existing browser and Playwright automation. Playwright is a tool that controls a browser from a program. An LLM needs page content that it can read and actions that work every time. These actions are: inspect, click, type, wait and make sure of the result. Later, Rust can supply a custom browser shell or controller, if the experiment shows a good reason for one.
 
-Use accessibility or DOM information to identify controls by role, name and state. Use screenshots to check appearance and content that is not represented adequately in those structures. A Rust implementation alone does not establish that an LLM can navigate an application reliably.
+Use the accessibility tree or the DOM to find each control by its role, name and state. The accessibility tree is a structure that the browser makes for screen readers. The DOM (Document Object Model) is the tree of elements in a page. Use screenshots to examine the appearance of a page, and content that these structures do not show correctly.
 
-## First learning experiment
-
-1. Choose one website and one small workflow, with an explicit expected result.
-2. Inspect the page through an existing browser automation integration.
-3. Find controls by their accessible role and name; perform the required actions.
-4. Verify the resulting page state and capture a screenshot where useful.
-5. Record any interaction gaps before deciding whether a Rust shell is needed.
-
-This is a proposed experiment. It has not been carried out for this project.
-
-## Questions to resolve
-
-- Is the objective to learn Rust webviews, to automate websites, or to build a browser product? These goals may call for different implementations.
-- Does the existing browser integration cover the chosen workflow?
-- If a custom shell is useful, which browser engine and automation interface meet the workflow's needs?
+A Rust implementation alone does not prove that an LLM can operate an application reliably.
 
 ## Manifest inclusion
 
-The manifest's [classification rules](https://github.com/kairin/000-0-manifest/blob/main/docs/local-sync.md#classification-and-new-repositories) put active original repositories beginning `000-111-` in the Learning section. Its repository tables are generated; do not add a handwritten table row.
+The [classification rules](https://github.com/kairin/000-0-manifest/blob/main/docs/local-sync.md#classification-and-new-repositories) of the manifest put active original repositories that start with `000-111-` in the Learning section. A script makes the repository tables of the manifest. Do not add a table row by hand.
 
-This project is published as [kairin/000-111-rust-browser](https://github.com/kairin/000-111-rust-browser), a public Learning repository, with the About description above. The manifest script classifies a public active original with the `000-111-` prefix automatically. Its generated inventory must still be refreshed and reviewed to include a new repository. A new private or internal repository would require an explicit entry in the manifest's `inventory-config.json`.
+This project is a public Learning repository at [kairin/000-111-rust-browser](https://github.com/kairin/000-111-rust-browser). It uses the GitHub description above. The manifest script classifies a public active original repository with the `000-111-` prefix automatically. But you must refresh and examine the inventory of the manifest to include a new repository. A new private or internal repository needs an entry in the `inventory-config.json` file of the manifest.
 
 ## References
 
-- [Playwright locators](https://playwright.dev/docs/locators): locating controls by role and accessible name.
-- [Playwright MCP](https://github.com/microsoft/playwright-mcp): structured accessibility snapshots and browser actions; also discusses CLI alternatives.
-- [Wry](https://github.com/tauri-apps/wry): a Rust webview library using existing platform engines, including WebKitGTK on Linux.
+- [Playwright locators](https://playwright.dev/docs/locators): find controls by role and accessible name.
+- [Playwright MCP](https://github.com/microsoft/playwright-mcp): structured accessibility snapshots and browser actions. It also discusses command-line alternatives.
+- [Wry](https://github.com/tauri-apps/wry): a Rust webview library that uses existing platform engines. On Linux, it uses WebKitGTK.
 - [OpenAI browser integration](https://learn.chatgpt.com/docs/chrome-extension): built-in browsing and connected browser profiles.

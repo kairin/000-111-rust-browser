@@ -1,8 +1,8 @@
-# Rust browser and LLM interaction — saved discussion
+# Rust browser and LLM interaction: saved discussion
 
 Date: 2026-10-05 (Asia/Singapore).
 
-Source: the conversation about the Rust image application in `000-222-rust-feh`. This record preserves the browser question and response, plus the related earlier user request. It is a discussion record, not an approved implementation specification.
+Source: the conversation about the Rust image application in `000-222-rust-feh`. This record keeps the browser question, the response and the related earlier user request. It is a discussion record. It is not an approved implementation specification. The quoted text is the original text, without change.
 
 ## Related earlier request
 
@@ -53,4 +53,4 @@ User:
 
 > save our communications regarding rust browser into rust-browser use the relevant naming schema under tier 3 for learning 3 - Tier 111 - Learning so that we can include into https://github.com/kairin/000-0-manifest
 
-The manifest's `000-111-` prefix makes the corresponding project name `000-111-rust-browser`. See the [README](../README.md) for the concise recommendation and future manifest inclusion steps.
+The manifest's `000-111-` prefix makes the corresponding project name `000-111-rust-browser`. See the [README](../../README.md) for the concise recommendation and future manifest inclusion steps.

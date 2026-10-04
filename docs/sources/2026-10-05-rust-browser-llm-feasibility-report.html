@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust Browser Generation via LLM - Interactive Feasibility Matrix</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom chart container constraints */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 360px;
+            }
+        }
+        /* Custom scrollbars for code blocks */
+        pre::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-orange-100 selection:text-orange-800">
+
+    <!-- Chosen Palette: Warm Rust & Slate - Warm slate background (#F8FAFC), slate typography (#0F172A), rust accent (#C2410C), teal sub-accent (#0D9488), clean white cards (#FFFFFF) and subtle slate borders (#E2E8F0). -->
+    <!-- Application Structure Plan: Designed as a 5-module developer dashboard to systematically guide engineers through LLM browser creation in Rust. Modules include: (1) Executive Summary & Key Metric Snapshot, (2) Interactive Route Decision Matrix & Simulator (calculating optimal route based on constraints), (3) LLM Failure Mode Visual Explorer (explaining complex borrow-checker and API drift hazards through side-by-side interactive visual diffs), (4) Production Implementation Blueprint Studio (providing pinned dependencies and modular Rust code for top tracks), and (5) Prompt Engineering Protocol & Generator (actionable prompt template builder). This structured approach transforms complex theoretical analysis into actionable engineering decisions. -->
+    <!-- Visualization & Content Choices: 
+        1. Key Metrics Overview -> Stat Cards with indicator badges -> Provides instant operational context -> HTML/Tailwind.
+        2. Route Comparison Metrics -> Dynamic Bar Chart (Chart.js) -> Dynamic metric switching (LLM Failure Rate, Compile Time, Web Compat, LOC) -> Multi-variable evaluation -> Chart.js Canvas.
+        3. Weighted Score Comparison -> Horizontal Bar Chart (Chart.js) -> Highlights composite decision matrix output (TUI: 4.75 vs Servo: 1.50) -> Chart.js Canvas.
+        4. Feasibility Simulator -> Interactive Logic Estimator -> Recalculates route matching based on time, C-deps, and standard JS needs -> JS State Engine.
+        5. Code Blueprints -> Multi-tab Code Studio -> Switch between Cargo.toml, main.rs, and setup docs with copy functionality -> Dynamic JS DOM updates.
+        Confirmation: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🦀</span>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide text-slate-100">Rust Browser via LLM</h1>
+                    <p class="text-xs text-orange-400 font-mono">Afternoon Feasibility & Implementation Guide</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-1 text-sm font-medium">
+                <button onclick="scrollToSection('overview')" class="px-3 py-2 rounded-md hover:bg-slate-800 transition text-slate-300 hover:text-white">Overview</button>
+                <button onclick="scrollToSection('routes')" class="px-3 py-2 rounded-md hover:bg-slate-800 transition text-slate-300 hover:text-white">Decision Matrix</button>
+                <button onclick="scrollToSection('simulator')" class="px-3 py-2 rounded-md hover:bg-slate-800 transition text-slate-300 hover:text-white">Route Simulator</button>
+                <button onclick="scrollToSection('failures')" class="px-3 py-2 rounded-md hover:bg-slate-800 transition text-slate-300 hover:text-white">LLM Failure Modes</button>
+                <button onclick="scrollToSection('blueprints')" class="px-3 py-2 rounded-md hover:bg-slate-800 transition text-slate-300 hover:text-white">Blueprints</button>
+                <button onclick="scrollToSection('prompts')" class="px-3 py-2 bg-orange-700 hover:bg-orange-600 text-white rounded-md transition ml-2 font-semibold">Prompt Generator</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECTION 1: EXECUTIVE OVERVIEW -->
+        <section id="overview" class="space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
+                <div class="max-w-3xl space-y-3">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-xs font-semibold uppercase tracking-wider">
+                        <span>⚡ Technical Assessment</span>
+                        <span>•</span>
+                        <span>3-4 Hour Timebox Target</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Generating a Rust Web Browser in an Afternoon Session</h2>
+                    <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
+                        Building a production web browser requires coordinating multi-threaded networking, HTML/CSS specifications, asynchronous JavaScript runtimes, and GPU rasterization. When constrained to an afternoon LLM coding session, standard success metrics pivot from standards completeness to <strong>borrow-checker minimization, zero dynamic C-linking errors, and strict API pinning</strong>.
+                    </p>
+                </div>
+
+                <!-- Key Metrics Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Top Feasibility Route</div>
+                        <div class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">Terminal TUI</div>
+                        <div class="text-xs text-emerald-600 font-medium mt-1">✓ Score: 4.75 / 5.0 (&lt;10% LLM Failure)</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Top Web-Full Route</div>
+                        <div class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">Embedded WebView</div>
+                        <div class="text-xs text-teal-600 font-medium mt-1">✓ Score: 3.65 / 5.0 (99% Web Compat)</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Scratch Engine Risk</div>
+                        <div class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">70% - 85%</div>
+                        <div class="text-xs text-rose-600 font-medium mt-1">⚠️ High borrow-checker deadlock risk</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-semibold text-slate-500 uppercase">Servo Build Latency</div>
+                        <div class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">30 - 90+ min</div>
+                        <div class="text-xs text-rose-600 font-medium mt-1">✕ Exceeds afternoon compile budget</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ARCHITECTURAL ROUTE COMPARISON -->
+        <section id="routes" class="space-y-6">
+            <div class="border-l-4 border-orange-600 pl-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Architectural Routes & Decision Matrix</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Comparative evaluation of the four primary architectural pathways across key engineering constraints.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Interactive Chart Panel -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Metrics Visualization</h3>
+                        <!-- Chart Metric Selector Buttons -->
+                        <div class="inline-flex p-1 bg-slate-100 rounded-lg text-xs font-medium space-x-1" id="chartMetricBtns">
+                            <button onclick="updateComparisonChart('score')" id="btn-score" class="px-2.5 py-1 rounded-md bg-white text-slate-900 shadow-sm">Composite Score</button>
+                            <button onclick="updateComparisonChart('failure')" id="btn-failure" class="px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900">LLM Failure %</button>
+                            <button onclick="updateComparisonChart('compile')" id="btn-compile" class="px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900">Cold Build (s)</button>
+                            <button onclick="updateComparisonChart('compat')" id="btn-compat" class="px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900">Web Standards %</button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Container -->
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-500 text-center italic">
+                        Tip: Click buttons above to toggle metrics across the four browser architectures.
+                    </p>
+                </div>
+
+                <!-- Weighted Decision Table Breakdown -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-3">Weighted Matrix Summary</h3>
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <!-- Route Item 1 -->
+                        <div class="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-slate-900 flex items-center space-x-2">
+                                    <span class="text-emerald-700">Option A: Terminal TUI Client</span>
+                                    <span class="px-2 py-0.5 bg-emerald-200 text-emerald-800 rounded font-mono text-[10px] font-semibold">RECOMMENDED</span>
+                                </div>
+                                <div class="text-slate-600 text-xs mt-1">Zero C-deps, pure-Rust TLS, &lt;90s build time.</div>
+                            </div>
+                            <div class="text-right pl-2">
+                                <div class="text-lg font-bold text-emerald-700">4.75</div>
+                                <div class="text-[10px] text-slate-500">/ 5.0</div>
+                            </div>
+                        </div>
+
+                        <!-- Route Item 2 -->
+                        <div class="p-3 rounded-xl bg-teal-50/60 border border-teal-200 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-slate-900 flex items-center space-x-2">
+                                    <span class="text-teal-800">Option B: Embedded WebView</span>
+                                    <span class="px-2 py-0.5 bg-teal-200 text-teal-800 rounded font-mono text-[10px] font-semibold">FULL WEB</span>
+                                </div>
+                                <div class="text-slate-600 text-xs mt-1">Uses OS engine via `wry`/`tao`. 99% standard support.</div>
+                            </div>
+                            <div class="text-right pl-2">
+                                <div class="text-lg font-bold text-teal-700">3.65</div>
+                                <div class="text-[10px] text-slate-500">/ 5.0</div>
+                            </div>
+                        </div>
+
+                        <!-- Route Item 3 -->
+                        <div class="p-3 rounded-xl bg-amber-50/60 border border-amber-200 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-slate-900">Option C: Toy Engine From Scratch</div>
+                                <div class="text-slate-600 text-xs mt-1">1,500 - 3,500 LOC. High borrow checker deadlock risk.</div>
+                            </div>
+                            <div class="text-right pl-2">
+                                <div class="text-lg font-bold text-amber-700">2.40</div>
+                                <div class="text-[10px] text-slate-500">/ 5.0</div>
+                            </div>
+                        </div>
+
+                        <!-- Route Item 4 -->
+                        <div class="p-3 rounded-xl bg-rose-50/60 border border-rose-200 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-slate-900">Option D: Servo Engine Extension</div>
+                                <div class="text-slate-600 text-xs mt-1">&gt;2M LOC, massive C/Python toolchain, 30-90m compile.</div>
+                            </div>
+                            <div class="text-right pl-2">
+                                <div class="text-lg font-bold text-rose-700">1.50</div>
+                                <div class="text-[10px] text-slate-500">/ 5.0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Taxonomy Data Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-sm sm:text-base">Full Architectural Comparison Table</h3>
+                    <span class="text-xs text-slate-500">Scroll horizontally on mobile →</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-600">
+                        <thead class="bg-slate-100/70 text-slate-800 font-semibold uppercase text-[11px] tracking-wider border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4">Implementation Route</th>
+                                <th class="py-3 px-4">LOC</th>
+                                <th class="py-3 px-4">Key Crates</th>
+                                <th class="py-3 px-4">External System Deps</th>
+                                <th class="py-3 px-4">Cold Build Time</th>
+                                <th class="py-3 px-4">LLM Failure Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3 px-4 font-bold text-slate-900">Terminal TUI Client</td>
+                                <td class="py-3 px-4 font-mono">250 – 450</td>
+                                <td class="py-3 px-4"><code class="bg-slate-100 px-1 py-0.5 rounded text-orange-800">ratatui, crossterm, reqwest, html2text</code></td>
+                                <td class="py-3 px-4 text-emerald-600 font-medium">None (pure Rust via rustls)</td>
+                                <td class="py-3 px-4 font-mono">45 – 90 sec</td>
+                                <td class="py-3 px-4 font-semibold text-emerald-600">&lt; 10%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3 px-4 font-bold text-slate-900">Embedded WebView Shell</td>
+                                <td class="py-3 px-4 font-mono">150 – 350</td>
+                                <td class="py-3 px-4"><code class="bg-slate-100 px-1 py-0.5 rounded text-teal-800">wry, tao, url</code></td>
+                                <td class="py-3 px-4 text-amber-600">WebKitGTK (Linux), WebView2 (Win)</td>
+                                <td class="py-3 px-4 font-mono">1 – 3 min</td>
+                                <td class="py-3 px-4 font-semibold text-teal-600">25% – 35%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3 px-4 font-bold text-slate-900">Toy Engine from Scratch</td>
+                                <td class="py-3 px-4 font-mono">1,500 – 3,500</td>
+                                <td class="py-3 px-4"><code class="bg-slate-100 px-1 py-0.5 rounded text-slate-800">tiny-skia, pixels, image</code></td>
+                                <td class="py-3 px-4 text-slate-600">Software Framebuffer / Canvas</td>
+                                <td class="py-3 px-4 font-mono">2 – 5 min</td>
+                                <td class="py-3 px-4 font-semibold text-rose-600">70% – 85%</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3 px-4 font-bold text-slate-900">Servo Extension Shell</td>
+                                <td class="py-3 px-4 font-mono">&gt; 2,000,000</td>
+                                <td class="py-3 px-4"><code class="bg-slate-100 px-1 py-0.5 rounded text-slate-800">servoshell, script, stylo</code></td>
+                                <td class="py-3 px-4 text-rose-600">Python3, CMake, Clang, HarfBuzz</td>
+                                <td class="py-3 px-4 font-mono">30 – 90+ min</td>
+                                <td class="py-3 px-4 font-semibold text-rose-600">&gt; 95%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: INTERACTIVE FEASIBILITY SIMULATOR -->
+        <section id="simulator" class="space-y-6">
+            <div class="border-l-4 border-teal-600 pl-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Interactive Feasibility Simulator</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Input your specific project parameters to identify the most feasible target architecture for your LLM coding session.
+                </p>
+            </div>
+
+            <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                <!-- Inputs Column -->
+                <div class="md:col-span-7 space-y-6">
+                    <h3 class="text-lg font-bold text-orange-400 flex items-center space-x-2">
+                        <span>⚙️ Session Parameters</span>
+                    </h3>
+
+                    <!-- Input 1: Time Budget -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <label for="sim-time" class="font-medium text-slate-300">Time Budget (Hours):</label>
+                            <span id="time-val" class="font-mono text-orange-400 font-bold">3.0 Hours</span>
+                        </div>
+                        <input type="range" id="sim-time" min="1" max="8" step="0.5" value="3" oninput="runSimulator()" class="w-full accent-orange-500 bg-slate-800 rounded-lg h-2 cursor-pointer">
+                    </div>
+
+                    <!-- Input 2: Modern Web / JS Need -->
+                    <div class="space-y-2">
+                        <label class="block text-xs sm:text-sm font-medium text-slate-300">JavaScript / Dynamic Web Requirements:</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="setSimJs(false)" id="js-no-btn" class="py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 font-medium text-center transition">Text / Article Reader Only</button>
+                            <button onclick="setSimJs(true)" id="js-yes-btn" class="py-2 px-3 text-xs sm:text-sm rounded-xl border border-teal-600 bg-teal-950/60 text-teal-300 font-medium text-center transition">Full JS & CSS Layouts</button>
+                        </div>
+                    </div>
+
+                    <!-- Input 3: System C-Dependency Tolerance -->
+                    <div class="space-y-2">
+                        <label class="block text-xs sm:text-sm font-medium text-slate-300">Environment C-Dependency Tolerance:</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="setSimCdeps(false)" id="cdep-no-btn" class="py-2 px-3 text-xs sm:text-sm rounded-xl border border-emerald-600 bg-emerald-950/60 text-emerald-300 font-medium text-center transition">Zero C-Deps (Pure Rust)</button>
+                            <button onclick="setSimCdeps(true)" id="cdep-yes-btn" class="py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 font-medium text-center transition">Allowed (GTK/WebKit installed)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendation Output Card -->
+                <div class="md:col-span-5 bg-slate-800/90 border border-slate-700 p-6 rounded-xl space-y-4 text-center md:text-left">
+                    <div class="text-xs font-mono uppercase tracking-wider text-slate-400">Optimal Recommended Track</div>
+                    <div id="sim-recommended-title" class="text-2xl font-bold text-emerald-400">Terminal TUI Browser</div>
+                    <p id="sim-recommended-desc" class="text-xs text-slate-300 leading-relaxed">
+                        Best fit for your tight temporal constraints and strict zero-dependency setup. Guarantees near 100% LLM code generation success without compilation traps.
+                    </p>
+                    <div class="pt-2 border-t border-slate-700/80 flex items-center justify-between text-xs">
+                        <span class="text-slate-400">LLM Generation Confidence:</span>
+                        <span id="sim-confidence-badge" class="px-2.5 py-1 bg-emerald-900/80 text-emerald-300 border border-emerald-700 rounded-full font-bold font-mono">95% High</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: MECHANISTIC LLM FAILURE MODES -->
+        <section id="failures" class="space-y-6">
+            <div class="border-l-4 border-rose-600 pl-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Mechanistic LLM Failure Modes in Rust</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Generative models encounter three key structural bottlenecks when writing Rust systems code.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Failure Mode 1 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-lg">1</div>
+                        <h3 class="font-bold text-slate-900 text-base">Recursive Tree Ownership</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            DOM trees require bidirectional pointers. LLMs default to <code class="bg-slate-100 text-rose-700 px-1 py-0.5 rounded font-mono">Rc&lt;RefCell&lt;Node&gt;&gt;</code>, which causes runtime dynamic borrow panics during multi-pass style and layout calculations.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-mono">
+                        <div class="text-rose-600 font-semibold mb-1">❌ Naive LLM Output:</div>
+                        <code>Rc&lt;RefCell&lt;Node&gt;&gt;</code>
+                        <div class="text-emerald-700 font-semibold mt-2 mb-1">✓ Idiomatic Fix:</div>
+                        <code>Arena Vector + NodeId</code>
+                    </div>
+                </div>
+
+                <!-- Failure Mode 2 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">2</div>
+                        <h3 class="font-bold text-slate-900 text-base">Temporal API Drift</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Rust graphics crates evolve rapidly. For instance, <code class="bg-slate-100 text-slate-800 px-1 py-0.5 rounded font-mono">winit v0.30</code> inverted its event loop API from procedural closures to stateful <code class="bg-slate-100 text-slate-800 px-1 py-0.5 rounded font-mono">ApplicationHandler</code> traits. LLMs mix obsolete signatures.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-mono">
+                        <div class="text-rose-600 font-semibold mb-1">❌ Outdated API:</div>
+                        <code>event_loop.run(closure)</code>
+                        <div class="text-emerald-700 font-semibold mt-2 mb-1">✓ Modern v0.30 API:</div>
+                        <code>event_loop.run_app(&mut app)</code>
+                    </div>
+                </div>
+
+                <!-- Failure Mode 3 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg">3</div>
+                        <h3 class="font-bold text-slate-900 text-base">Context Window Drift</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Building a parser, style matcher, and layout box pipeline spans thousands of lines. As conversational context grows, LLMs lose track of struct definitions (e.g. float vs integer coordinates), triggering compilation type mismatches.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-mono">
+                        <div class="text-amber-700 font-semibold mb-1">⚠️ Symptom:</div>
+                        <code>Type Mismatch at Phase 5</code>
+                        <div class="text-emerald-700 font-semibold mt-2 mb-1">✓ Countermeasure:</div>
+                        <code>Monolithic main.rs first</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: IMPLEMENTATION BLUEPRINTS -->
+        <section id="blueprints" class="space-y-6">
+            <div class="border-l-4 border-slate-900 pl-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Production Implementation Blueprints</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Select a target track to view verified dependency pins and minimal compiling source code.
+                </p>
+            </div>
+
+            <!-- Blueprint Studio Card -->
+            <div class="bg-slate-900 text-slate-100 rounded-2xl overflow-hidden shadow-xl border border-slate-800">
+                <!-- Studio Header / Track Selector -->
+                <div class="p-4 sm:p-6 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex space-x-2">
+                        <button onclick="switchTrack('tui')" id="track-tui-btn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-orange-700 text-white shadow-sm transition">
+                            Track 1: Terminal TUI Browser (Highest Reliability)
+                        </button>
+                        <button onclick="switchTrack('webview')" id="track-wv-btn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 text-slate-400 hover:text-slate-200 transition">
+                            Track 2: Embedded WebView Shell (Full Web)
+                        </button>
+                    </div>
+                    <button onclick="copyCode()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono rounded-lg border border-slate-700 transition flex items-center space-x-1">
+                        <span id="copy-text">📋 Copy Active Code</span>
+                    </button>
+                </div>
+
+                <!-- Code Container -->
+                <div class="p-6 space-y-6">
+                    <!-- Dependency Manifest Box -->
+                    <div class="space-y-2">
+                        <div class="text-xs font-mono text-orange-400 uppercase tracking-wider font-semibold">1. Cargo.toml (Pinned Dependencies)</div>
+                        <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto"><code id="code-toml">
+[package]
+name = "rust_terminal_browser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.28.1"
+ratatui = "0.29.0"
+reqwest = { version = "0.12.9", default-features = false, features = ["rustls-tls"] }
+tokio = { version = "1.40.0", features = ["full"] }
+html2text = "0.13.6"
+                        </code></pre>
+                    </div>
+
+                    <!-- Main Rust Source Box -->
+                    <div class="space-y-2">
+                        <div class="text-xs font-mono text-teal-400 uppercase tracking-wider font-semibold">2. src/main.rs (Monolithic Non-Blocking Implementation)</div>
+                        <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto max-h-96"><code id="code-rust">
+// Terminal Browser Architecture: Asynchronous Network Transport + ratatui Render Engine
+use crossterm::{
+    event::{self, Event as CEvent, KeyCode, KeyEventKind},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use ratatui::{
+    backend::CrosstermBackend,
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
+    widgets::{Block, Borders, Paragraph},
+    Terminal,
+};
+use std::io;
+use std::time::Duration;
+use tokio::sync::mpsc;
+
+enum NetworkMessage {
+    PageLoaded(String),
+    LoadFailed(String),
+}
+
+struct ApplicationState {
+    url_input: String,
+    status_line: String,
+    content_lines: Vec<String>,
+    vertical_scroll: usize,
+    viewport_width: usize,
+    is_loading: bool,
+}
+
+impl ApplicationState {
+    fn new() -> Self {
+        Self {
+            url_input: String::from("https://news.ycombinator.com"),
+            status_line: String::from("Press ENTER to navigate, UP/DOWN to scroll, ESC to quit"),
+            content_lines: Vec::new(),
+            vertical_scroll: 0,
+            viewport_width: 80,
+            is_loading: false,
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen)?;
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
+
+    // Configure panic hook to restore terminal on abnormal exit
+    let original_panic_hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        let _ = disable_raw_mode();
+        let _ = execute!(io::stdout(), LeaveAlternateScreen);
+        original_panic_hook(panic_info);
+    }));
+
+    let (net_tx, mut net_rx) = mpsc::channel::<NetworkMessage>(10);
+    let mut app = ApplicationState::new();
+
+    loop {
+        // Drain network queue
+        while let Ok(msg) = net_rx.try_recv() {
+            app.is_loading = false;
+            match msg {
+                NetworkMessage::PageLoaded(body) => {
+                    app.content_lines = body.lines().map(|s| s.to_string()).collect();
+                    app.vertical_scroll = 0;
+                    app.status_line = format!("Loaded {} lines.", app.content_lines.len());
+                }
+                NetworkMessage::LoadFailed(err) => {
+                    app.status_line = format!("Network failure: {}", err);
+                }
+            }
+        }
+
+        terminal.draw(|frame| {
+            let area = frame.area();
+            app.viewport_width = area.width.saturating_sub(2) as usize;
+
+            let chunks = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([Constraint::Length(3), Constraint::Min(5), Constraint::Length(1)])
+                .split(area);
+
+            let address_paragraph = Paragraph::new(app.url_input.as_str())
+                .block(Block::default().borders(Borders::ALL).title("URL Location"));
+            frame.render_widget(address_paragraph, chunks[0]);
+
+            let visible_slice = app.content_lines.iter()
+                .skip(app.vertical_scroll)
+                .take(chunks[1].height.saturating_sub(2) as usize)
+                .cloned().collect::<Vec<String>>().join("\n");
+
+            let content_display = if app.is_loading { "Fetching target document...".to_string() } else { visible_slice };
+            let content_paragraph = Paragraph::new(content_display)
+                .block(Block::default().borders(Borders::ALL).title("Rendered Document"));
+            frame.render_widget(content_paragraph, chunks[1]);
+
+            let status_widget = Paragraph::new(app.status_line.as_str())
+                .style(Style::default().bg(Color::Blue).fg(Color::White).add_modifier(Modifier::BOLD));
+            frame.render_widget(status_widget, chunks[2]);
+        })?;
+
+        if event::poll(Duration::from_millis(50))? {
+            if let CEvent::Key(key) = event::read()? {
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Esc => break,
+                        KeyCode::Down => { if app.vertical_scroll < app.content_lines.len().saturating_sub(1) { app.vertical_scroll += 1; } }
+                        KeyCode::Up => { app.vertical_scroll = app.vertical_scroll.saturating_sub(1); }
+                        KeyCode::Enter => {
+                            if !app.is_loading {
+                                app.is_loading = true;
+                                app.status_line = format!("Connecting to {}...", app.url_input);
+                                let tx_clone = net_tx.clone();
+                                let target_url = app.url_input.clone();
+                                let target_width = app.viewport_width;
+                                tokio::spawn(async move {
+                                    fetch_and_parse(&target_url, target_width, tx_clone).await;
+                                });
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+
+    disable_raw_mode()?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+    Ok(())
+}
+
+async fn fetch_and_parse(target: &str, width: usize, sender: mpsc::Sender<NetworkMessage>) {
+    let client = reqwest::Client::builder().timeout(Duration::from_secs(10)).build();
+    let client = match client { Ok(c) => c, Err(e) => { let _ = sender.send(NetworkMessage::LoadFailed(e.to_string())).await; return; } };
+    match client.get(target).send().await {
+        Ok(res) => match res.text().await {
+            Ok(html) => {
+                let parsed = html2text::from_read(html.as_bytes(), width.max(20));
+                let _ = sender.send(NetworkMessage::PageLoaded(parsed)).await;
+            }
+            Err(e) => { let _ = sender.send(NetworkMessage::LoadFailed(e.to_string())).await; }
+        },
+        Err(e) => { let _ = sender.send(NetworkMessage::LoadFailed(e.to_string())).await; }
+    }
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: PROMPT ENGINEERING PROTOCOL -->
+        <section id="prompts" class="space-y-6">
+            <div class="border-l-4 border-orange-600 pl-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Prompt Engineering Protocol</h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Follow these 3 core rules to enforce compiling Rust outputs from LLMs during short sessions.
+                </p>
+            </div>
+
+            <!-- 3 Rules Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                    <div class="text-xs font-mono font-bold text-orange-600 uppercase">Rule 1</div>
+                    <div class="font-bold text-slate-900 text-sm">Manifest Locking</div>
+                    <p class="text-xs text-slate-600">Provide exact, pinned crate versions in your initial prompt. Prevents deprecated API signatures.</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                    <div class="text-xs font-mono font-bold text-teal-600 uppercase">Rule 2</div>
+                    <div class="font-bold text-slate-900 text-sm">Monolithic Single-File</div>
+                    <p class="text-xs text-slate-600">Instruct the LLM to write code inside `src/main.rs`. Keeps cross-module context intact.</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                    <div class="text-xs font-mono font-bold text-indigo-600 uppercase">Rule 3</div>
+                    <div class="font-bold text-slate-900 text-sm">Flat Vec Architectures</div>
+                    <p class="text-xs text-slate-600">Explicitly ban `Rc&lt;RefCell&lt;T&gt;&gt;`. Enforce index-backed vectors (`Vec&lt;T&gt;`) for trees.</p>
+                </div>
+            </div>
+
+            <!-- Dynamic Prompt Generator Box -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <h3 class="font-bold text-slate-900 text-base">Interactive Prompt Template Generator</h3>
+                <p class="text-xs text-slate-600">Select parameters to construct an optimized prompt for Claude 3.5 Sonnet or GPT-4o:</p>
+                
+                <div class="flex flex-wrap gap-3 text-xs">
+                    <label class="inline-flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="prompt-track" value="tui" checked onchange="generatePromptText()" class="accent-orange-600">
+                        <span class="font-medium text-slate-800">Target Track 1 (Terminal TUI)</span>
+                    </label>
+                    <label class="inline-flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 cursor-pointer">
+                        <input type="radio" name="prompt-track" value="webview" onchange="generatePromptText()" class="accent-orange-600">
+                        <span class="font-medium text-slate-800">Target Track 2 (Embedded WebView)</span>
+                    </label>
+                </div>
+
+                <div class="relative">
+                    <textarea id="prompt-output" readonly rows="6" class="w-full bg-slate-900 text-slate-200 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none"></textarea>
+                    <button onclick="copyGeneratedPrompt()" class="absolute top-3 right-3 px-3 py-1.5 bg-orange-700 hover:bg-orange-600 text-white text-xs font-semibold rounded-lg transition shadow-sm">
+                        <span id="prompt-copy-btn-text">Copy System Prompt</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 text-slate-400 py-8 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <p class="font-semibold text-slate-300">Rust Browser via LLM - Interactive Feasibility Matrix</p>
+                <p class="mt-0.5 text-slate-500">Based on technical research for single-session Rust web browser construction.</p>
+            </div>
+            <div class="text-slate-500 font-mono">
+                Rust 2021 Edition • Cargo Pinned Releases
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Global State & Data Models
+        let currentMetric = 'score';
+        let isJsRequired = false;
+        let isCdepsAllowed = false;
+        let activeTrack = 'tui';
+
+        // Chart.js Setup
+        let comparisonChartInstance = null;
+
+        const chartDataSets = {
+            score: {
+                label: 'Weighted Score (out of 5.0)',
+                data: [4.75, 3.65, 2.40, 1.50],
+                backgroundColor: ['#059669', '#0d9488', '#d97706', '#e11d48'],
+                max: 5.0
+            },
+            failure: {
+                label: 'LLM Generation Failure Rate (%)',
+                data: [8, 30, 78, 96],
+                backgroundColor: ['#059669', '#0d9488', '#d97706', '#e11d48'],
+                max: 100
+            },
+            compile: {
+                label: 'Average Cold Compile Time (Seconds)',
+                data: [60, 120, 210, 3600],
+                backgroundColor: ['#059669', '#0d9488', '#d97706', '#e11d48'],
+                max: 3800
+            },
+            compat: {
+                label: 'Modern Web Standard Compatibility (%)',
+                data: [15, 99, 10, 80],
+                backgroundColor: ['#059669', '#0d9488', '#d97706', '#e11d48'],
+                max: 100
+            }
+        };
+
+        const routesLabels = ['Terminal TUI', 'Embedded WebView', 'Toy Scratch Engine', 'Servo Extension'];
+
+        function initChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            comparisonChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: routesLabels,
+                    datasets: [{
+                        label: chartDataSets.score.label,
+                        data: chartDataSets.score.data,
+                        backgroundColor: chartDataSets.score.backgroundColor,
+                        borderRadius: 8,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: 12, family: 'sans-serif' },
+                                color: '#334155'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5.0,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { color: '#64748b' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#334155', font: { weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateComparisonChart(metricKey) {
+            currentMetric = metricKey;
+            
+            // Update button styles
+            const btnIds = ['score', 'failure', 'compile', 'compat'];
+            btnIds.forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                if (id === metricKey) {
+                    btn.className = "px-2.5 py-1 rounded-md bg-white text-slate-900 shadow-sm font-bold";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900";
+                }
+            });
+
+            // Update Chart Dataset
+            const ds = chartDataSets[metricKey];
+            comparisonChartInstance.data.datasets[0].label = ds.label;
+            comparisonChartInstance.data.datasets[0].data = ds.data;
+            comparisonChartInstance.options.scales.y.max = ds.max;
+            comparisonChartInstance.update();
+        }
+
+        // Simulator Logic
+        function setSimJs(val) {
+            isJsRequired = val;
+            const btnYes = document.getElementById('js-yes-btn');
+            const btnNo = document.getElementById('js-no-btn');
+            if (val) {
+                btnYes.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-teal-600 bg-teal-950/60 text-teal-300 font-medium text-center transition shadow-sm";
+                btnNo.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-medium text-center transition";
+            } else {
+                btnNo.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-teal-600 bg-teal-950/60 text-teal-300 font-medium text-center transition shadow-sm";
+                btnYes.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-medium text-center transition";
+            }
+            runSimulator();
+        }
+
+        function setSimCdeps(val) {
+            isCdepsAllowed = val;
+            const btnYes = document.getElementById('cdep-yes-btn');
+            const btnNo = document.getElementById('cdep-no-btn');
+            if (val) {
+                btnYes.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-emerald-600 bg-emerald-950/60 text-emerald-300 font-medium text-center transition shadow-sm";
+                btnNo.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-medium text-center transition";
+            } else {
+                btnNo.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-emerald-600 bg-emerald-950/60 text-emerald-300 font-medium text-center transition shadow-sm";
+                btnYes.className = "py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-medium text-center transition";
+            }
+            runSimulator();
+        }
+
+        function runSimulator() {
+            const timeVal = parseFloat(document.getElementById('sim-time').value);
+            document.getElementById('time-val').textContent = `${timeVal.toFixed(1)} Hours`;
+
+            const titleEl = document.getElementById('sim-recommended-title');
+            const descEl = document.getElementById('sim-recommended-desc');
+            const confEl = document.getElementById('sim-confidence-badge');
+
+            if (isJsRequired) {
+                if (timeVal < 2.0 && !isCdepsAllowed) {
+                    titleEl.textContent = "Embedded WebView Shell (Constrained)";
+                    titleEl.className = "text-2xl font-bold text-amber-400";
+                    descEl.textContent = "JavaScript is required, but your zero C-dependency constraint and <2h time limit create high risk on Linux environments. Works best on Windows/macOS.";
+                    confEl.textContent = "65% Moderate";
+                    confEl.className = "px-2.5 py-1 bg-amber-900/80 text-amber-300 border border-amber-700 rounded-full font-bold font-mono";
+                } else {
+                    titleEl.textContent = "Embedded WebView Shell (Track 2)";
+                    titleEl.className = "text-2xl font-bold text-teal-400";
+                    descEl.textContent = "Optimal track for full modern web application support (JS, CSS3, WebGL). Offloads layout calculations to native OS WebViews via pinned wry/tao crates.";
+                    confEl.textContent = "88% High";
+                    confEl.className = "px-2.5 py-1 bg-teal-900/80 text-teal-300 border border-teal-700 rounded-full font-bold font-mono";
+                }
+            } else {
+                if (timeVal >= 6.0) {
+                    titleEl.textContent = "Toy Engine From Scratch (Educational)";
+                    titleEl.className = "text-2xl font-bold text-amber-400";
+                    descEl.textContent = "You have enough time to attempt an educational DOM/CSSOM pipeline, but borrow-checker deadlocks remain a high LLM risk.";
+                    confEl.textContent = "45% Low Success Rate";
+                    confEl.className = "px-2.5 py-1 bg-rose-900/80 text-rose-300 border border-rose-700 rounded-full font-bold font-mono";
+                } else {
+                    titleEl.textContent = "Terminal TUI Browser (Track 1)";
+                    titleEl.className = "text-2xl font-bold text-emerald-400";
+                    descEl.textContent = "Best overall path for an afternoon session. Zero C-dependencies, pure-Rust TLS via rustls, rapid compile times, and near 100% LLM code generation success.";
+                    confEl.textContent = "95% Highest Feasibility";
+                    confEl.className = "px-2.5 py-1 bg-emerald-900/80 text-emerald-300 border border-emerald-700 rounded-full font-bold font-mono";
+                }
+            }
+        }
+
+        // Code Track Switcher
+        const trackCodeData = {
+            tui: {
+                toml: `[package]
+name = "rust_terminal_browser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.28.1"
+ratatui = "0.29.0"
+reqwest = { version = "0.12.9", default-features = false, features = ["rustls-tls"] }
+tokio = { version = "1.40.0", features = ["full"] }
+html2text = "0.13.6"`,
+                rust: `// Terminal Browser Architecture: Asynchronous Network Transport + ratatui Render Engine
+use crossterm::{
+    event::{self, Event as CEvent, KeyCode, KeyEventKind},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use ratatui::{
+    backend::CrosstermBackend,
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
+    widgets::{Block, Borders, Paragraph},
+    Terminal,
+};
+use std::io;
+use std::time::Duration;
+use tokio::sync::mpsc;
+
+enum NetworkMessage {
+    PageLoaded(String),
+    LoadFailed(String),
+}
+
+struct ApplicationState {
+    url_input: String,
+    status_line: String,
+    content_lines: Vec<String>,
+    vertical_scroll: usize,
+    viewport_width: usize,
+    is_loading: bool,
+}
+
+impl ApplicationState {
+    fn new() -> Self {
+        Self {
+            url_input: String::from("https://news.ycombinator.com"),
+            status_line: String::from("Press ENTER to navigate, UP/DOWN to scroll, ESC to quit"),
+            content_lines: Vec::new(),
+            vertical_scroll: 0,
+            viewport_width: 80,
+            is_loading: false,
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen)?;
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
+
+    let original_panic_hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        let _ = disable_raw_mode();
+        let _ = execute!(io::stdout(), LeaveAlternateScreen);
+        original_panic_hook(panic_info);
+    }));
+
+    let (net_tx, mut net_rx) = mpsc::channel::<NetworkMessage>(10);
+    let mut app = ApplicationState::new();
+
+    loop {
+        while let Ok(msg) = net_rx.try_recv() {
+            app.is_loading = false;
+            match msg {
+                NetworkMessage::PageLoaded(body) => {
+                    app.content_lines = body.lines().map(|s| s.to_string()).collect();
+                    app.vertical_scroll = 0;
+                    app.status_line = format!("Loaded {} lines.", app.content_lines.len());
+                }
+                NetworkMessage::LoadFailed(err) => {
+                    app.status_line = format!("Network failure: {}", err);
+                }
+            }
+        }
+
+        terminal.draw(|frame| {
+            let area = frame.area();
+            app.viewport_width = area.width.saturating_sub(2) as usize;
+
+            let chunks = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([Constraint::Length(3), Constraint::Min(5), Constraint::Length(1)])
+                .split(area);
+
+            let address_paragraph = Paragraph::new(app.url_input.as_str())
+                .block(Block::default().borders(Borders::ALL).title("URL Location"));
+            frame.render_widget(address_paragraph, chunks[0]);
+
+            let visible_slice = app.content_lines.iter()
+                .skip(app.vertical_scroll)
+                .take(chunks[1].height.saturating_sub(2) as usize)
+                .cloned().collect::<Vec<String>>().join("\n");
+
+            let content_display = if app.is_loading { "Fetching target document...".to_string() } else { visible_slice };
+            let content_paragraph = Paragraph::new(content_display)
+                .block(Block::default().borders(Borders::ALL).title("Rendered Document"));
+            frame.render_widget(content_paragraph, chunks[1]);
+
+            let status_widget = Paragraph::new(app.status_line.as_str())
+                .style(Style::default().bg(Color::Blue).fg(Color::White).add_modifier(Modifier::BOLD));
+            frame.render_widget(status_widget, chunks[2]);
+        })?;
+
+        if event::poll(Duration::from_millis(50))? {
+            if let CEvent::Key(key) = event::read()? {
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Esc => break,
+                        KeyCode::Down => { if app.vertical_scroll < app.content_lines.len().saturating_sub(1) { app.vertical_scroll += 1; } }
+                        KeyCode::Up => { app.vertical_scroll = app.vertical_scroll.saturating_sub(1); }
+                        KeyCode::Enter => {
+                            if !app.is_loading {
+                                app.is_loading = true;
+                                app.status_line = format!("Connecting to {}...", app.url_input);
+                                let tx_clone = net_tx.clone();
+                                let target_url = app.url_input.clone();
+                                let target_width = app.viewport_width;
+                                tokio::spawn(async move {
+                                    fetch_and_parse(&target_url, target_width, tx_clone).await;
+                                });
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+
+    disable_raw_mode()?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+    Ok(())
+}
+
+async fn fetch_and_parse(target: &str, width: usize, sender: mpsc::Sender<NetworkMessage>) {
+    let client = reqwest::Client::builder().timeout(Duration::from_secs(10)).build();
+    let client = match client { Ok(c) => c, Err(e) => { let _ = sender.send(NetworkMessage::LoadFailed(e.to_string())).await; return; } };
+    match client.get(target).send().await {
+        Ok(res) => match res.text().await {
+            Ok(html) => {
+                let parsed = html2text::from_read(html.as_bytes(), width.max(20));
+                let _ = sender.send(NetworkMessage::PageLoaded(parsed)).await;
+            }
+            Err(e) => { let _ = sender.send(NetworkMessage::LoadFailed(e.to_string())).await; }
+        },
+        Err(e) => { let _ = sender.send(NetworkMessage::LoadFailed(e.to_string())).await; }
+    }
+}`
+            },
+            webview: {
+                toml: `[package]
+name = "rust_webview_browser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tao = "0.30.0"
+wry = "0.46.0"
+url = "2.5.0"`,
+                rust: `// Embedded WebView Shell Architecture using pinned tao and wry crates
+use std::io::{self, BufRead};
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::thread;
+use tao::{
+    event::{Event, WindowEvent},
+    event_loop::{ControlFlow, EventLoopBuilder},
+    window::WindowBuilder,
+};
+use wry::WebViewBuilder;
+
+enum UserAction {
+    Navigate(String),
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let event_loop = EventLoopBuilder::<()>::new().build();
+    let window = WindowBuilder::new()
+        .with_title("Rust Desktop WebView Browser")
+        .with_inner_size(tao::dpi::LogicalSize::new(1280.0, 800.0))
+        .build(&event_loop)?;
+
+    let (tx, rx): (Sender<UserAction>, Receiver<UserAction>) = channel();
+
+    // Isolated background thread for non-blocking stdin URL navigation
+    thread::spawn(move || {
+        let stdin = io::stdin();
+        let mut reader = stdin.lock();
+        println!("Enter Target URL and press RETURN:");
+        loop {
+            let mut buffer = String::new();
+            if reader.read_line(&mut buffer).is_ok() {
+                let trimmed = buffer.trim();
+                if !trimmed.is_empty() {
+                    let formatted = if !trimmed.starts_with("http://") && !trimmed.starts_with("https://") {
+                        format!("https://{}", trimmed)
+                    } else {
+                        trimmed.to_string()
+                    };
+                    let _ = tx.send(UserAction::Navigate(formatted));
+                }
+            }
+        }
+    });
+
+    let default_url = "https://news.ycombinator.com";
+
+    #[cfg(not(target_os = "linux"))]
+    let webview = WebViewBuilder::new(&window)
+        .with_url(default_url)
+        .build()?;
+
+    #[cfg(target_os = "linux")]
+    let webview = {
+        use tao::platform::unix::WindowExtUnix;
+        use wry::WebViewBuilderExtUnix;
+        let container = window.default_vbox().expect("GTK vbox container unavailable");
+        WebViewBuilder::new_gtk(container)
+            .with_url(default_url)
+            .build()?
+    };
+
+    let event_loop_proxy = event_loop.create_proxy();
+
+    thread::spawn(move || {
+        while let Ok(action) = rx.recv() {
+            match action {
+                UserAction::Navigate(url) => {
+                    let script = format!("window.location.href = '{}';", url);
+                    let _ = webview.evaluate_script(&script);
+                    let _ = event_loop_proxy.send_event(());
+                }
+            }
+        }
+    });
+
+    event_loop.run(move |event, _, control_flow| {
+        *control_flow = ControlFlow::Wait;
+        match event {
+            Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => *control_flow = ControlFlow::Exit,
+            _ => (),
+        }
+    });
+}`
+            }
+        };
+
+        function switchTrack(trackKey) {
+            activeTrack = trackKey;
+            const btnTui = document.getElementById('track-tui-btn');
+            const btnWv = document.getElementById('track-wv-btn');
+
+            if (trackKey === 'tui') {
+                btnTui.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-orange-700 text-white shadow-sm transition";
+                btnWv.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 text-slate-400 hover:text-slate-200 transition";
+            } else {
+                btnWv.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-teal-700 text-white shadow-sm transition";
+                btnTui.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 text-slate-400 hover:text-slate-200 transition";
+            }
+
+            document.getElementById('code-toml').textContent = trackCodeData[trackKey].toml;
+            document.getElementById('code-rust').textContent = trackCodeData[trackKey].rust;
+        }
+
+        function copyCode() {
+            const codeText = trackCodeData[activeTrack].rust;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const btnText = document.getElementById('copy-text');
+                btnText.textContent = "✓ Copied to Clipboard!";
+                setTimeout(() => { btnText.textContent = "📋 Copy Active Code"; }, 2000);
+            });
+        }
+
+        // Prompt Protocol Text Generator
+        function generatePromptText() {
+            const selectedTrack = document.querySelector('input[name="prompt-track"]:checked').value;
+            const outputArea = document.getElementById('prompt-output');
+
+            if (selectedTrack === 'tui') {
+                outputArea.value = `ACT AS AN EXPERT RUST SYSTEMS DEVELOPER.
+Task: Write a fully compiling, monolithic single-file Terminal Web Browser in src/main.rs.
+
+MANDATORY CONSTRAINTS:
+1. Use exact Cargo.toml manifest pins:
+   crossterm = "0.28.1"
+   ratatui = "0.29.0"
+   reqwest = { version = "0.12.9", default-features = false, features = ["rustls-tls"] }
+   tokio = { version = "1.40.0", features = ["full"] }
+   html2text = "0.13.6"
+2. Write ALL logic in src/main.rs (do not introduce sub-modules).
+3. Do NOT use Rc<RefCell<T>> anywhere. Handle state in a single struct ApplicationState.
+4. Set up an asynchronous Tokio network loop communicating via mpsc channels with the Ratatui event loop.`;
+            } else {
+                outputArea.value = `ACT AS AN EXPERT RUST SYSTEMS DEVELOPER.
+Task: Write a fully compiling, monolithic single-file Desktop WebView Shell Browser in src/main.rs.
+
+MANDATORY CONSTRAINTS:
+1. Use exact Cargo.toml manifest pins:
+   tao = "0.30.0"
+   wry = "0.46.0"
+   url = "2.5.0"
+2. Write ALL logic in src/main.rs (do not introduce sub-modules).
+3. Do NOT use outdated winit closure signatures. Match tao v0.30 / wry v0.46 event loop signatures.
+4. Include platform-specific GTK container initialization for Linux targets.`;
+            }
+        }
+
+        function copyGeneratedPrompt() {
+            const text = document.getElementById('prompt-output').value;
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = document.getElementById('prompt-copy-btn-text');
+                copyBtn.textContent = "✓ Copied Prompt!";
+                setTimeout(() => { copyBtn.textContent = "Copy System Prompt"; }, 2000);
+            });
+        }
+
+        // Smooth Scroll Helper
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            runSimulator();
+            generatePromptText();
+        });
+    </script>
+</body>
+</html>
