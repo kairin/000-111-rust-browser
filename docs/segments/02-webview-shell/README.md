@@ -27,7 +27,13 @@ A shell is the window, menus and controls around a web engine. The web engine re
 - The discussion says that the main advantage of a Rust shell is its automation interface, not the Rust language.
 - The report says that the wry builder API changes between minor releases. LLMs often mix old and new forms.
 
-Sources: `docs/sources/2026-10-05-discussion.md` and `docs/sources/2026-10-05-rust-browser-llm-feasibility-report.md`.
+Sources: `docs/sources/2026-10-05-discussion.md` and `docs/sources/2026-10-05-rust-browser-llm-feasibility-report.md`. These are source claims; the build and compatibility experiments remain unrun.
+
+## Arguments for and against this route
+
+- **For Rust desktop learning:** a webview shell gives ownership of the window, menus, IPC and native platform integration while an existing engine renders the page. This remains a useful goal even if segment 01 already solves browser automation.
+- **Against selecting it for Workday now:** engine differences between platforms, native dependencies and unverified blueprint threading add uncertainty. A successful Chromium baseline does not establish WebKitGTK compatibility, and opening a page does not establish an enterprise workflow.
+- **Boundary:** the [Workday report](../../sources/2026-10-05-workday-chrome-automation-report.md) proposes retaining Chrome for that use case. This is an architectural argument, not evidence that Wry is inherently incompatible with Workday. See [recommendations](../../recommendations.md) and the [Workday case study](../08-workday-data-access/README.md).
 
 ## Claims to test
 
@@ -43,9 +49,9 @@ The report gives these numbers without a source.
 
 ## Blueprint
 
-The folder `blueprint/` holds the sample program from the report, without change. It pins tao 0.30.0, wry 0.46.0 and url 2.5.0. A pinned version is an exact version number in `Cargo.toml`.
+The folder [blueprint/](blueprint/) holds the sample program from the report, without change. It pins tao 0.30.0, wry 0.46.0 and url 2.5.0. A pinned version is an exact version number in `Cargo.toml`. The sample has not been compiled in this research; the problems below are hypotheses to check, not recorded failures.
 
-Known problems:
+Potential blueprint problems to test:
 
 - The program moves the `webview` value into a new thread. We think that the wry `WebView` type cannot go to another thread. If so, the program does not compile.
 - GTK must run on the main thread. A second thread that controls the webview can fail on Linux.
@@ -57,14 +63,16 @@ Known problems:
 2. Build the blueprint without changes. Record each compile error.
 3. Repair the blueprint to the smallest extent. Record each change.
 4. Open one website in the shell.
-5. Add one automation command, for example "read the page title". Make sure that a program can call it.
-6. Compare the result with segment 01.
+5. Add one automation command, for example "read the page title". Make sure that a program can call it; this checks the interface only.
+6. For an automation claim, perform one real page action and verify its declared result. Use a delayed control or SPA route fixture from segment 01 to check waiting and re-observation.
+7. Compare the same workflow with segment 01. Record operating system, engine and native dependencies so a result on one platform is not presented as a result on all three.
 
 ## Decision
 
-- Continue only if segment 01 shows a need that an existing browser cannot meet.
-- If the shell builds and the automation command works, write a design for a full automation interface.
-- If the build needs more than one afternoon, record why.
+- Continue for the stated Rust desktop-shell learning goal, or for a demonstrated native integration need. Website automation alone needs evidence of an advantage over segment 01.
+- If the shell builds and the command works, a fuller interface is a proposal. Require real actions and verified results before calling it an automation solution.
+- Stop the afternoon experiment at its time boundary and record unresolved build or threading issues. Do not expand it into an engine replacement to repair those issues.
+- Workday adoption requires the same authorised workflow comparison as [segment 07](../07-rust-chrome-controller/README.md); keep that choice in [recommendations](../../recommendations.md).
 
 ## References
 

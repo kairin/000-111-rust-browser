@@ -23,13 +23,19 @@ A rendering engine reads HTML and CSS and then draws the page. A toy engine supp
 - The engine has these phases: parse HTML into a DOM, parse CSS into a CSSOM, match selectors to make a style tree, calculate layout, then draw pixels.
 - The DOM module needs about 150 lines of code.
 - Layout is the hardest step. It must calculate block flow, inline text size, line wrap and margin collapse.
-- A toy engine cannot reliably show real websites. It is useful only for static test pages.
-- DOM nodes refer to parents, siblings and children. In Rust, these references cause conflicts with the borrow checker.
+- This toy engine supports a deliberately small subset of HTML and CSS. Static test pages are its useful scope; compatibility with arbitrary real websites is not established.
+- DOM nodes refer to parents, siblings and children. In Rust, these references can cause conflicts with the borrow checker.
 - LLMs often use `Rc<RefCell<Node>>` for these references. This can fail at compile time or stop the program at run time.
-- An arena with `NodeId` index numbers avoids these conflicts. But LLMs often lose this structure in long programs.
+- An arena with `NodeId` index numbers can simplify ownership. It still needs valid indices and correct traversal; the report says LLMs often lose this structure in long programs.
 - The report rejects this route because the risk of borrow-checker problems is too high.
 
-Source: `docs/sources/2026-10-05-rust-browser-llm-feasibility-report.md`.
+Source: `docs/sources/2026-10-05-rust-browser-llm-feasibility-report.md`. Its sizes and failure rates are source claims to test, not measurements from this project.
+
+## Arguments for and against this route
+
+- **For engine learning:** owning the parser, style matching and layout makes their data contracts and Rust ownership choices visible. An arena is a useful design hypothesis for this particular graph.
+- **Against near-term Workday use:** browser compatibility is a separate, much larger task involving JavaScript, layout, authentication and browser APIs. A compiled parser or rendered static page shows no direct gain for the workflows in the [Workday case study](../08-workday-data-access/README.md).
+- **Boundary:** the [Workday report](../../sources/2026-10-05-workday-chrome-automation-report.md) proposes using Chrome’s existing engine. That proposal leaves this learning experiment useful; project adoption choices belong in [recommendations](../../recommendations.md).
 
 ## Claims to test
 
@@ -47,13 +53,15 @@ The report gives these numbers without a source.
 1. Read robinson and rust-browser. Count the lines of each phase.
 2. Ask an LLM to write only the DOM and HTML parser with an arena. Build it.
 3. Ask the LLM to add the CSS parser and the style tree. Build it again.
-4. Record each type mismatch between phases.
-5. Stop at the end of the afternoon. Record the last phase that compiles.
+4. Record each type mismatch between phases. Fix the DOM, style and layout interfaces explicitly before expanding the supported syntax.
+5. Use small static fixtures with known node trees, matched styles and expected box positions. A build alone does not check these results.
+6. Stop at the end of the afternoon. Record the last phase that compiles and the supported HTML/CSS subset. Do not add enterprise website compatibility to this time-bounded experiment.
 
 ## Decision
 
-- This segment is for learning, not for a product. A toy engine cannot operate real websites.
-- If the LLM reaches layout in one afternoon, the report claim is too strong. Record the result.
+- Continue for parser, style and layout learning within the declared subset. Stop this experiment at the afternoon boundary and preserve partial results.
+- If the LLM reaches working layout in one afternoon, record evidence against the report’s rejection for that scope. This does not establish general browser compatibility.
+- Do not advance it for near-term Workday automation without a separate compatibility programme and a demonstrated advantage over segment 01. See [segment 07](../07-rust-chrome-controller/README.md) for the controller path.
 
 ## References
 
