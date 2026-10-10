@@ -1,4 +1,4 @@
-# 000-111-rust-browser — AI Agent Guidelines
+# 000-111-workday-automation-learning — AI Agent Guidelines
 
 Single source of truth for AI agents in this repository. If `CLAUDE.md` or `GEMINI.md` exists, it points to this file.
 
@@ -44,3 +44,9 @@ Commit as `Mister K <678459+kairin@users.noreply.github.com>`. This is the
 public GitHub name and the GitHub noreply email. Do not commit with another
 name or with a personal email address. Check with `git config user.name` and
 `git config user.email` before you commit.
+
+## Workday project group
+
+Repository: `000-111-workday-automation-learning`. Owns browser automation learning and experiments relevant to Workday. Existing general browser and Rust research remains reference material; the research plans are not completed implementations. Automation research belongs in
+`000-333-workday-automation-research`; browser automation learning belongs in
+`000-111-workday-automation-learning`.

@@ -1,4 +1,6 @@
-# Rust Browser Learning
+# Workday automation learning
+
+Part of the Workday project group. Owns browser automation learning and experiments relevant to Workday. Existing general browser and Rust research remains reference material; the research plans are not completed implementations.
 
 Learning notes about how an LLM can read and operate a website, and where Rust can help with a browser shell or controller. Workday is one proposed use case. It does not define the scope of all the research.
 
@@ -6,7 +8,7 @@ An LLM (large language model) is an AI system that reads and writes text, for ex
 
 | Field | Value |
 |---|---|
-| Project name | `000-111-rust-browser` |
+| Project name | `000-111-workday-automation-learning` |
 | Manifest section | 3 - Tier 111 - Learning |
 | Status | Discussion and learning notes. No browser implementation. |
 | Discussion date | 2026-10-05, Asia/Singapore |
@@ -53,7 +55,7 @@ Prove one complete website workflow with an existing browser and Playwright firs
 
 The [classification rules](https://github.com/kairin/000-0-manifest/blob/main/docs/local-sync.md#classification-and-new-repositories) of the manifest put active original repositories that start with `000-111-` in the Learning section. A script makes the repository tables of the manifest. Do not add a table row by hand.
 
-This project is a public Learning repository at [kairin/000-111-rust-browser](https://github.com/kairin/000-111-rust-browser). It uses the GitHub description above. The manifest script classifies a public active original repository with the `000-111-` prefix automatically. But you must refresh and examine the inventory of the manifest to include a new repository. A new private or internal repository needs an entry in the `inventory-config.json` file of the manifest.
+This project is a public Learning repository at [kairin/000-111-workday-automation-learning](https://github.com/kairin/000-111-workday-automation-learning). It uses the GitHub description above. The manifest script classifies a public active original repository with the `000-111-` prefix automatically. But you must refresh and examine the inventory of the manifest to include a new repository. A new private or internal repository needs an entry in the `inventory-config.json` file of the manifest.
 
 ## References
 
